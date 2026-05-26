@@ -28,8 +28,8 @@ Keep generated source prompts in this file or in nearby `.prompt.md` files when 
 | CRT glow overlay | `Assets/Props/prop-crt-glow-v1.png` | Animated screen pulse overlay | Planned |
 | Paper sorting overlay | `Assets/Props/prop-paper-sort-v1.png` | Small mail sorting animation | Planned |
 | Quest complete effect | `Assets/Effects/fx-quest-complete-sparkle-v1.png` | Lightweight completion feedback | Planned |
-| Main office home mockup V1 | `Assets/Mockups/main-office-home-v1.png` | First flat home-screen concept | Generated V1 |
-| Main office home mockup V2 | `Assets/Mockups/main-office-home-v2.png` | Cleaner game-like home-screen target | Generated V2 |
+| Main office home mockup V1 | `Assets/Mockups/main-office-home-v1.png` | Preferred flat home-screen direction | Preferred V1 |
+| Main office home mockup V2 | `Assets/Mockups/main-office-home-v2.png` | Cleaner alternate exploration | Alternate V2 |
 
 ## Background Prompt V1
 
