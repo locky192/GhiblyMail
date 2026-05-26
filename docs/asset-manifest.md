@@ -20,7 +20,7 @@ Keep generated source prompts in this file or in nearby `.prompt.md` files when 
 
 | Asset | Path | Purpose | Status |
 | --- | --- | --- | --- |
-| Empty office background | `Assets/Office/office-background-empty-v1.png` | Main scene base with no people or HUD | Generated V1 |
+| Empty office background | `Assets/Office/office-background-empty-v1.png` | Main scene base with no people or HUD | Integrated V1 |
 | Triage assistant typing loop | `Assets/Agents/triage/agent-triage-typing-v1.png` | Agent working at inbox sorting station | Planned |
 | Drafting assistant typing loop | `Assets/Agents/drafting/agent-drafting-typing-v1.png` | Agent composing reply drafts | Planned |
 | Calendar assistant idle loop | `Assets/Agents/calendar/agent-calendar-idle-v1.png` | Calendar invite queue station | Planned |
@@ -48,9 +48,11 @@ Avoid: Studio Ghibli copy, recognizable copyrighted characters, readable text, b
 Generated output:
 
 - Workspace path: `Assets/Office/office-background-empty-v1.png`
+- App bundle path: `Sources/GhiblyMailCore/Resources/Office/office-background-empty-v1.png`
 - Dimensions: 1672 x 941 PNG
 - Generation mode: built-in image generation
 - Initial review: strong fit for the target scene, no people or baked HUD, clear work zones, and enough open floor space for assistant sprites and overlays.
+- Integration status: bundled through SwiftPM resources and displayed by `OfficeSceneView` with normalized station anchors and temporary animated agent placeholders.
 
 ## Sprite Prompt Pattern
 

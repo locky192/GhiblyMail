@@ -15,7 +15,10 @@ let package = Package(
     targets: [
         .target(
             name: "GhiblyMailCore",
-            path: "Sources/GhiblyMailCore"
+            path: "Sources/GhiblyMailCore",
+            resources: [
+                .process("Resources")
+            ]
         ),
         .executableTarget(
             name: "GhiblyMail",

@@ -1,148 +1,122 @@
 import SwiftUI
 
+#if canImport(AppKit)
+import AppKit
+#endif
+
 struct OfficeSceneView: View {
     @EnvironmentObject private var store: CommandCenterStore
 
+    private let imageAspectRatio: CGFloat = 1672.0 / 941.0
+
     var body: some View {
         GeometryReader { proxy in
+            let sceneFrame = fittedSceneFrame(in: proxy.size)
+
             ZStack {
-                roomShell(in: proxy.size)
-                greenery(in: proxy.size)
-                windows(in: proxy.size)
-                floorDetails(in: proxy.size)
-                desks(in: proxy.size)
-                agents(in: proxy.size)
-                statusStrip
-                    .padding(16)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                Theme.deepTeal.opacity(0.22)
+
+                ZStack {
+                    OfficeBackgroundImage()
+                        .frame(width: sceneFrame.width, height: sceneFrame.height)
+
+                    stationLayer(in: sceneFrame.size)
+                    ambientLayer(in: sceneFrame.size)
+                    agentLayer(in: sceneFrame.size)
+
+                    statusStrip
+                        .padding(sceneFrame.width * 0.018)
+                        .frame(
+                            width: sceneFrame.width,
+                            height: sceneFrame.height,
+                            alignment: .bottomLeading
+                        )
+                }
+                .frame(width: sceneFrame.width, height: sceneFrame.height)
+                .position(x: sceneFrame.midX, y: sceneFrame.midY)
             }
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Color.black.opacity(0.12), lineWidth: 1)
             )
+            .accessibilityElement(children: .contain)
+            .accessibilityLabel("GhiblyMail office command center")
         }
     }
 
-    private func roomShell(in size: CGSize) -> some View {
+    private func fittedSceneFrame(in container: CGSize) -> CGRect {
+        guard container.width > 0, container.height > 0 else {
+            return .zero
+        }
+
+        let containerRatio = container.width / container.height
+        let width: CGFloat
+        let height: CGFloat
+
+        if containerRatio > imageAspectRatio {
+            height = container.height
+            width = height * imageAspectRatio
+        } else {
+            width = container.width
+            height = width / imageAspectRatio
+        }
+
+        return CGRect(
+            x: (container.width - width) / 2,
+            y: (container.height - height) / 2,
+            width: width,
+            height: height
+        )
+    }
+
+    private func stationLayer(in size: CGSize) -> some View {
         ZStack {
-            Path { path in
-                path.move(to: CGPoint(x: size.width * 0.08, y: size.height * 0.34))
-                path.addLine(to: CGPoint(x: size.width * 0.50, y: size.height * 0.13))
-                path.addLine(to: CGPoint(x: size.width * 0.92, y: size.height * 0.34))
-                path.addLine(to: CGPoint(x: size.width * 0.92, y: size.height * 0.78))
-                path.addLine(to: CGPoint(x: size.width * 0.50, y: size.height * 0.97))
-                path.addLine(to: CGPoint(x: size.width * 0.08, y: size.height * 0.78))
-                path.closeSubpath()
-            }
-            .fill(Theme.teal)
-
-            Path { path in
-                path.move(to: CGPoint(x: size.width * 0.08, y: size.height * 0.34))
-                path.addLine(to: CGPoint(x: size.width * 0.50, y: size.height * 0.13))
-                path.addLine(to: CGPoint(x: size.width * 0.92, y: size.height * 0.34))
-                path.addLine(to: CGPoint(x: size.width * 0.50, y: size.height * 0.54))
-                path.closeSubpath()
-            }
-            .fill(Theme.warmWall)
-        }
-        .shadow(color: .black.opacity(0.18), radius: 18, x: 0, y: 12)
-    }
-
-    private func windows(in size: CGSize) -> some View {
-        HStack(spacing: 14) {
-            ForEach(0..<3, id: \.self) { _ in
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color(red: 0.72, green: 0.87, blue: 0.91))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(.white.opacity(0.75), lineWidth: 2)
-                    )
-                    .frame(width: size.width * 0.10, height: size.height * 0.12)
+            ForEach(OfficeStation.allCases) { station in
+                StationBeacon(station: station)
+                    .frame(width: size.width * 0.07, height: size.width * 0.07)
+                    .position(station.point(in: size))
             }
         }
-        .rotationEffect(.degrees(0))
-        .position(x: size.width * 0.50, y: size.height * 0.29)
     }
 
-    private func greenery(in size: CGSize) -> some View {
-        HStack(spacing: 4) {
-            ForEach(0..<10, id: \.self) { index in
-                Circle()
-                    .fill(index.isMultiple(of: 2) ? Theme.leaf : Color(red: 0.42, green: 0.62, blue: 0.36))
-                    .frame(width: 26, height: 26)
-            }
-        }
-        .blur(radius: 0.4)
-        .position(x: size.width * 0.50, y: size.height * 0.18)
-    }
+    private func ambientLayer(in size: CGSize) -> some View {
+        TimelineView(.animation) { timeline in
+            let t = timeline.date.timeIntervalSinceReferenceDate
 
-    private func floorDetails(in size: CGSize) -> some View {
-        ZStack {
-            ForEach(0..<7, id: \.self) { index in
-                Path { path in
-                    let y = size.height * (0.44 + Double(index) * 0.065)
-                    path.move(to: CGPoint(x: size.width * 0.18, y: y))
-                    path.addLine(to: CGPoint(x: size.width * 0.82, y: y))
+            ZStack {
+                ForEach(0..<4, id: \.self) { index in
+                    ScreenGlow(delay: Double(index) * 0.9, time: t)
+                        .frame(width: size.width * 0.033, height: size.height * 0.042)
+                        .position(crtGlowPosition(index, in: size))
                 }
-                .stroke(Color.white.opacity(0.12), lineWidth: 1)
+
+                PaperSortEffect(time: t)
+                    .frame(width: size.width * 0.09, height: size.height * 0.06)
+                    .position(x: size.width * 0.36, y: size.height * 0.48)
             }
-
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Theme.paper.opacity(0.9))
-                .frame(width: size.width * 0.16, height: size.height * 0.055)
-                .rotationEffect(.degrees(-12))
-                .position(x: size.width * 0.72, y: size.height * 0.68)
-
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Theme.deepTeal.opacity(0.38))
-                .frame(width: size.width * 0.13, height: size.height * 0.08)
-                .rotationEffect(.degrees(10))
-                .position(x: size.width * 0.33, y: size.height * 0.72)
         }
+        .allowsHitTesting(false)
     }
 
-    private func desks(in size: CGSize) -> some View {
+    private func agentLayer(in size: CGSize) -> some View {
         ZStack {
-            DeskCluster()
-                .frame(width: size.width * 0.25, height: size.height * 0.18)
-                .position(x: size.width * 0.36, y: size.height * 0.50)
+            ForEach(store.agents) { agent in
+                let station = OfficeStation(role: agent.role)
 
-            DeskCluster()
-                .frame(width: size.width * 0.25, height: size.height * 0.18)
-                .position(x: size.width * 0.64, y: size.height * 0.50)
-
-            MeetingTable()
-                .frame(width: size.width * 0.20, height: size.height * 0.14)
-                .position(x: size.width * 0.52, y: size.height * 0.73)
-
-            Bookshelf()
-                .frame(width: size.width * 0.13, height: size.height * 0.19)
-                .position(x: size.width * 0.22, y: size.height * 0.38)
-
-            WaterCooler()
-                .frame(width: size.width * 0.06, height: size.height * 0.14)
-                .position(x: size.width * 0.80, y: size.height * 0.40)
-        }
-    }
-
-    private func agents(in size: CGSize) -> some View {
-        ZStack {
-            ForEach(Array(store.agents.enumerated()), id: \.element.id) { index, agent in
-                AgentAvatarView(agent: agent)
-                    .frame(width: 76, height: 104)
-                    .position(agentPosition(index: index, in: size))
+                PlaceholderAgentSprite(agent: agent)
+                    .frame(width: max(62, size.width * 0.060), height: max(76, size.width * 0.080))
+                    .position(station.agentPoint(in: size))
             }
         }
     }
 
-    private func agentPosition(index: Int, in size: CGSize) -> CGPoint {
+    private func crtGlowPosition(_ index: Int, in size: CGSize) -> CGPoint {
         let points = [
-            CGPoint(x: size.width * 0.30, y: size.height * 0.48),
-            CGPoint(x: size.width * 0.43, y: size.height * 0.54),
-            CGPoint(x: size.width * 0.59, y: size.height * 0.47),
-            CGPoint(x: size.width * 0.70, y: size.height * 0.55),
-            CGPoint(x: size.width * 0.50, y: size.height * 0.74)
+            CGPoint(x: size.width * 0.297, y: size.height * 0.454),
+            CGPoint(x: size.width * 0.420, y: size.height * 0.401),
+            CGPoint(x: size.width * 0.520, y: size.height * 0.418),
+            CGPoint(x: size.width * 0.632, y: size.height * 0.739)
         ]
         return points[index % points.count]
     }
@@ -151,12 +125,15 @@ struct OfficeSceneView: View {
         HStack(spacing: 8) {
             Image(systemName: "building.2")
                 .foregroundStyle(Theme.deepTeal)
+
             Text("Studio floor")
                 .font(.system(size: 13, weight: .bold))
+
             Text(store.lastOperationMessage)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(Theme.mutedInk)
                 .lineLimit(1)
+                .truncationMode(.tail)
         }
         .padding(.horizontal, 12)
         .frame(height: 40)
@@ -169,101 +146,137 @@ struct OfficeSceneView: View {
     }
 }
 
-private struct DeskCluster: View {
+private struct OfficeBackgroundImage: View {
     var body: some View {
+        Group {
+            if let image = Self.image {
+                Image(nsImage: image)
+                    .resizable()
+                    .scaledToFit()
+            } else {
+                fallback
+            }
+        }
+        .accessibilityHidden(true)
+    }
+
+    private var fallback: some View {
         ZStack {
-            RoundedRectangle(cornerRadius: 5)
-                .fill(Theme.wood)
-                .rotationEffect(.degrees(-8))
-                .shadow(color: .black.opacity(0.20), radius: 5, x: 0, y: 4)
+            Rectangle()
+                .fill(Theme.teal)
 
-            ForEach(0..<2, id: \.self) { index in
-                CRTView()
-                    .frame(width: 54, height: 44)
-                    .offset(x: CGFloat(index * 56 - 28), y: -10)
+            VStack(spacing: 8) {
+                Image(systemName: "photo")
+                    .font(.system(size: 28, weight: .semibold))
+                Text("Office background missing")
+                    .font(.system(size: 13, weight: .bold))
             }
-
-            Circle()
-                .fill(Theme.paper)
-                .frame(width: 14, height: 14)
-                .offset(x: 52, y: 24)
+            .foregroundStyle(.white.opacity(0.82))
         }
     }
-}
 
-private struct CRTView: View {
-    var body: some View {
-        TimelineView(.animation) { timeline in
-            let pulse = (sin(timeline.date.timeIntervalSinceReferenceDate * 2.0) + 1) / 2
-            VStack(spacing: 2) {
-                RoundedRectangle(cornerRadius: 4)
-                    .fill(Color(red: 0.78, green: 0.70, blue: 0.58))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 2)
-                            .fill(Theme.deepTeal.opacity(0.70 + pulse * 0.20))
-                            .overlay(alignment: .topLeading) {
-                                Circle()
-                                    .fill(Theme.teal.opacity(0.75))
-                                    .frame(width: 5, height: 5)
-                                    .offset(x: 9 + pulse * 20, y: 9)
-                            }
-                            .padding(6)
-                    )
-                    .frame(height: 30)
-
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(Color(red: 0.64, green: 0.57, blue: 0.46))
-                    .frame(width: 28, height: 8)
-            }
+#if canImport(AppKit)
+    private static let image: NSImage? = {
+        guard let url = Bundle.module.url(
+            forResource: "office-background-empty-v1",
+            withExtension: "png",
+            subdirectory: "Office"
+        ) else {
+            return nil
         }
-    }
+
+        return NSImage(contentsOf: url)
+    }()
+#else
+    private static let image: NSImage? = nil
+#endif
 }
 
-private struct AgentAvatarView: View {
-    var agent: Agent
+private struct PlaceholderAgentSprite: View {
+    let agent: Agent
 
     var body: some View {
         TimelineView(.animation) { timeline in
-            let bob = agent.state == .working
-                ? sin(timeline.date.timeIntervalSinceReferenceDate * 2.8 + Double(agent.name.count)) * 2.5
-                : 0
+            let time = timeline.date.timeIntervalSinceReferenceDate
+            let phase = time * speed + Double(agent.name.count)
+            let bob = agent.state == .working ? sin(phase) * 2.4 : 0
+            let armSwing = agent.state == .working ? sin(phase * 2.1) * 5 : 0
 
-            VStack(spacing: 4) {
-                ZStack {
-                    Circle()
-                        .fill(colorForRole.opacity(0.24))
-                        .frame(width: 58, height: 58)
-                        .scaleEffect(agent.state == .needsReview ? 1.07 : 1.0)
+            ZStack {
+                Ellipse()
+                    .fill(.black.opacity(0.18))
+                    .frame(width: 42, height: 13)
+                    .offset(y: 38)
+                    .blur(radius: 2)
 
-                    Circle()
-                        .fill(Color(red: 0.96, green: 0.74, blue: 0.58))
-                        .frame(width: 28, height: 28)
+                VStack(spacing: 0) {
+                    ZStack {
+                        HairShape()
+                            .fill(Color(red: 0.17, green: 0.13, blue: 0.11))
+                            .frame(width: 32, height: 24)
+                            .offset(y: -12)
+
+                        Circle()
+                            .fill(Color(red: 0.95, green: 0.74, blue: 0.58))
+                            .frame(width: 27, height: 27)
+                            .offset(y: -7)
+
+                        HStack(spacing: 7) {
+                            Circle().fill(Theme.ink).frame(width: 2.5, height: 2.5)
+                            Circle().fill(Theme.ink).frame(width: 2.5, height: 2.5)
+                        }
                         .offset(y: -8)
+                    }
+                    .zIndex(1)
 
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(colorForRole)
-                        .frame(width: 38, height: 28)
-                        .offset(y: 18)
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 11)
+                            .fill(roleColor)
+                            .frame(width: 36, height: 34)
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 11)
+                                    .stroke(Color.white.opacity(0.45), lineWidth: 1)
+                            )
 
-                    Image(systemName: agent.role.systemImage)
-                        .font(.system(size: 13, weight: .bold))
-                        .foregroundStyle(.white)
-                        .offset(y: 18)
+                        HStack(spacing: 20) {
+                            Capsule()
+                                .fill(Color(red: 0.95, green: 0.74, blue: 0.58))
+                                .frame(width: 7, height: 24)
+                                .rotationEffect(.degrees(-10 + armSwing))
+
+                            Capsule()
+                                .fill(Color(red: 0.95, green: 0.74, blue: 0.58))
+                                .frame(width: 7, height: 24)
+                                .rotationEffect(.degrees(10 - armSwing))
+                        }
+                        .offset(y: 4)
+
+                        Image(systemName: agent.role.systemImage)
+                            .font(.system(size: 12, weight: .bold))
+                            .foregroundStyle(.white)
+                            .offset(y: -1)
+                    }
                 }
+                .offset(y: bob)
 
-                Text(agent.name)
-                    .font(.system(size: 11, weight: .bold))
-                    .padding(.horizontal, 7)
-                    .frame(height: 20)
-                    .background(Theme.panelStrong)
-                    .clipShape(RoundedRectangle(cornerRadius: 6))
+                stateBadge(time: time)
+                    .offset(x: 28, y: -30)
             }
-            .offset(y: bob)
         }
+        .accessibilityElement(children: .ignore)
         .accessibilityLabel("\(agent.name), \(agent.role.rawValue), \(agent.state.rawValue)")
     }
 
-    private var colorForRole: Color {
+    private var speed: Double {
+        switch agent.state {
+        case .working: 2.6
+        case .needsReview: 1.5
+        case .waiting: 1.1
+        case .idle: 0.8
+        }
+    }
+
+    private var roleColor: Color {
         switch agent.role {
         case .triage: Theme.teal
         case .drafting: Theme.blue
@@ -272,55 +285,199 @@ private struct AgentAvatarView: View {
         case .attachments: Theme.coral
         }
     }
+
+    @ViewBuilder
+    private func stateBadge(time: TimeInterval) -> some View {
+        let pulse = (sin(time * 2.0 + Double(agent.name.count)) + 1) / 2
+
+        ZStack {
+            Circle()
+                .fill(badgeColor.opacity(0.22 + pulse * 0.12))
+                .frame(width: 30, height: 30)
+
+            Circle()
+                .fill(Theme.panelStrong)
+                .frame(width: 22, height: 22)
+                .overlay(Circle().stroke(Theme.line, lineWidth: 1))
+
+            Image(systemName: badgeIcon)
+                .font(.system(size: 10, weight: .bold))
+                .foregroundStyle(badgeColor)
+        }
+        .scaleEffect(agent.state == .needsReview ? 1.0 + pulse * 0.08 : 1.0)
+    }
+
+    private var badgeColor: Color {
+        switch agent.state {
+        case .working: Theme.teal
+        case .waiting: Theme.amber
+        case .needsReview: Theme.coral
+        case .idle: Theme.mutedInk
+        }
+    }
+
+    private var badgeIcon: String {
+        switch agent.state {
+        case .working: "ellipsis"
+        case .waiting: "clock"
+        case .needsReview: "exclamationmark"
+        case .idle: "checkmark"
+        }
+    }
 }
 
-private struct MeetingTable: View {
+private struct StationBeacon: View {
+    let station: OfficeStation
+
+    var body: some View {
+        TimelineView(.animation) { timeline in
+            let pulse = (sin(timeline.date.timeIntervalSinceReferenceDate * 1.8 + station.phase) + 1) / 2
+
+            ZStack {
+                Circle()
+                    .stroke(station.color.opacity(0.18 + pulse * 0.20), lineWidth: 2)
+                    .scaleEffect(0.72 + pulse * 0.16)
+
+                Circle()
+                    .fill(station.color.opacity(0.08 + pulse * 0.05))
+                    .scaleEffect(0.56)
+
+                Image(systemName: station.icon)
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundStyle(station.color.opacity(0.86))
+                    .padding(7)
+                    .background(Theme.panelStrong.opacity(0.90))
+                    .clipShape(Circle())
+                    .overlay(Circle().stroke(Color.white.opacity(0.55), lineWidth: 1))
+                    .shadow(color: .black.opacity(0.12), radius: 4, x: 0, y: 2)
+            }
+        }
+        .accessibilityHidden(true)
+    }
+}
+
+private struct ScreenGlow: View {
+    let delay: Double
+    let time: TimeInterval
+
+    var body: some View {
+        let pulse = (sin((time + delay) * 2.4) + 1) / 2
+
+        RoundedRectangle(cornerRadius: 4)
+            .fill(Theme.teal.opacity(0.12 + pulse * 0.24))
+            .blur(radius: 1.4)
+            .blendMode(.screen)
+    }
+}
+
+private struct PaperSortEffect: View {
+    let time: TimeInterval
+
     var body: some View {
         ZStack {
-            Ellipse()
-                .fill(Color(red: 0.52, green: 0.32, blue: 0.18))
-                .shadow(color: .black.opacity(0.16), radius: 5, x: 0, y: 4)
-            ForEach(0..<4, id: \.self) { index in
-                Circle()
-                    .fill(Theme.paper)
-                    .frame(width: 13, height: 13)
-                    .offset(
-                        x: cos(Double(index) * .pi / 2) * 50,
-                        y: sin(Double(index) * .pi / 2) * 28
-                    )
+            ForEach(0..<3, id: \.self) { index in
+                let progress = (sin(time * 1.7 + Double(index) * 1.2) + 1) / 2
+
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Theme.paper.opacity(0.70))
+                    .frame(width: 18, height: 12)
+                    .rotationEffect(.degrees(-9 + progress * 18))
+                    .offset(x: -20 + CGFloat(index) * 18 + progress * 5, y: -6 + CGFloat(index) * 4)
+                    .shadow(color: .black.opacity(0.12), radius: 2, x: 0, y: 1)
             }
         }
     }
 }
 
-private struct Bookshelf: View {
-    var body: some View {
-        VStack(spacing: 4) {
-            ForEach(0..<4, id: \.self) { row in
-                HStack(spacing: 3) {
-                    ForEach(0..<5, id: \.self) { index in
-                        RoundedRectangle(cornerRadius: 1)
-                            .fill([Theme.blue, Theme.coral, Theme.amber, Theme.leaf, Theme.paper][(row + index) % 5])
-                            .frame(width: 8, height: 22)
-                    }
-                }
-            }
-        }
-        .padding(8)
-        .background(Theme.wood)
-        .clipShape(RoundedRectangle(cornerRadius: 5))
+private struct HairShape: Shape {
+    func path(in rect: CGRect) -> Path {
+        var path = Path()
+        path.move(to: CGPoint(x: rect.minX + rect.width * 0.12, y: rect.maxY))
+        path.addCurve(
+            to: CGPoint(x: rect.maxX - rect.width * 0.12, y: rect.maxY),
+            control1: CGPoint(x: rect.minX + rect.width * 0.08, y: rect.minY + rect.height * 0.05),
+            control2: CGPoint(x: rect.maxX - rect.width * 0.08, y: rect.minY + rect.height * 0.05)
+        )
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.20, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.34, y: rect.maxY - rect.height * 0.16))
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.48, y: rect.midY))
+        path.addLine(to: CGPoint(x: rect.maxX - rect.width * 0.63, y: rect.maxY - rect.height * 0.14))
+        path.addLine(to: CGPoint(x: rect.minX + rect.width * 0.28, y: rect.midY))
+        path.closeSubpath()
+        return path
     }
 }
 
-private struct WaterCooler: View {
-    var body: some View {
-        VStack(spacing: 0) {
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color(red: 0.55, green: 0.78, blue: 0.88).opacity(0.85))
-                .frame(height: 48)
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color(red: 0.76, green: 0.76, blue: 0.70))
-                .frame(height: 42)
+private enum OfficeStation: CaseIterable, Identifiable {
+    case triage
+    case drafting
+    case calendar
+    case memory
+    case attachments
+
+    var id: Self { self }
+
+    init(role: AgentRole) {
+        switch role {
+        case .triage: self = .triage
+        case .drafting: self = .drafting
+        case .calendar: self = .calendar
+        case .memory: self = .memory
+        case .attachments: self = .attachments
         }
+    }
+
+    var icon: String {
+        switch self {
+        case .triage: "tray.full"
+        case .drafting: "pencil.and.outline"
+        case .calendar: "calendar.badge.clock"
+        case .memory: "person.crop.rectangle.stack"
+        case .attachments: "paperclip"
+        }
+    }
+
+    var color: Color {
+        switch self {
+        case .triage: Theme.teal
+        case .drafting: Theme.blue
+        case .calendar: Theme.amber
+        case .memory: Theme.leaf
+        case .attachments: Theme.coral
+        }
+    }
+
+    var phase: Double {
+        switch self {
+        case .triage: 0.2
+        case .drafting: 1.1
+        case .calendar: 1.8
+        case .memory: 2.5
+        case .attachments: 3.2
+        }
+    }
+
+    func point(in size: CGSize) -> CGPoint {
+        let normalized: CGPoint = switch self {
+        case .triage: CGPoint(x: 0.302, y: 0.495)
+        case .drafting: CGPoint(x: 0.455, y: 0.424)
+        case .calendar: CGPoint(x: 0.735, y: 0.466)
+        case .memory: CGPoint(x: 0.198, y: 0.274)
+        case .attachments: CGPoint(x: 0.618, y: 0.734)
+        }
+
+        return CGPoint(x: size.width * normalized.x, y: size.height * normalized.y)
+    }
+
+    func agentPoint(in size: CGSize) -> CGPoint {
+        let normalized: CGPoint = switch self {
+        case .triage: CGPoint(x: 0.306, y: 0.567)
+        case .drafting: CGPoint(x: 0.454, y: 0.498)
+        case .calendar: CGPoint(x: 0.745, y: 0.535)
+        case .memory: CGPoint(x: 0.246, y: 0.322)
+        case .attachments: CGPoint(x: 0.606, y: 0.817)
+        }
+
+        return CGPoint(x: size.width * normalized.x, y: size.height * normalized.y)
     }
 }
