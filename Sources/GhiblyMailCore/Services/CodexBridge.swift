@@ -27,6 +27,7 @@ private final class JSONLineBuffer: @unchecked Sendable {
 protocol CodexBridge: Sendable {
     func checkReadiness() async -> CodexReadiness
     func importQuestProposals(label: String) async throws -> [QuestProposal]
+    func executeApprovedAction(_ action: ApprovedCodexAction) async throws -> String
 }
 
 enum CodexBridgeError: Error, LocalizedError, Sendable {
@@ -113,6 +114,21 @@ struct MockCodexBridge: CodexBridge {
             )
         ]
     }
+
+    func executeApprovedAction(_ action: ApprovedCodexAction) async throws -> String {
+        switch action.kind {
+        case .createDraft:
+            return "Mock Gmail draft created. No email was sent."
+        case .moveToDone:
+            return "Mock thread moved to done."
+        case .restoreFromDone:
+            return "Mock thread restored to inbox."
+        case .manuallyUnsubscribe:
+            return "Mock manual unsubscribe completed."
+        default:
+            return "Mock action recorded locally."
+        }
+    }
 }
 
 final class LocalCodexBridge: CodexBridge, @unchecked Sendable {
@@ -149,6 +165,59 @@ final class LocalCodexBridge: CodexBridge, @unchecked Sendable {
 
         let response = try await runCodexTurn(prompt: prompt)
         return try Self.decodeQuestProposals(from: response)
+    }
+
+    func executeApprovedAction(_ action: ApprovedCodexAction) async throws -> String {
+        let readiness = await checkReadiness()
+        guard readiness.isReadyForGmailRead else {
+            throw CodexBridgeError.codexNotReady(readiness.summary)
+        }
+
+        let prompt = actionPrompt(for: action)
+        return try await runCodexTurn(prompt: prompt)
+    }
+
+    private func actionPrompt(for action: ApprovedCodexAction) -> String {
+        let thread = action.providerThreadID ?? "unknown"
+        let base = """
+        You are executing a user-approved GhiblyMail action through the Gmail plugin.
+        Hard limits:
+        - Operate only on Gmail label:\(action.sourceLabel).
+        - Operate only on thread id:\(thread).
+        - Never send email.
+        - Never delete mail.
+        - If the requested thread is not inside label:\(action.sourceLabel), stop and report that no action was taken.
+        - Return a concise plain-text result.
+        """
+
+        switch action.kind {
+        case .createDraft:
+            return """
+            \(base)
+            Create a Gmail draft reply in the existing thread using this exact draft body:
+            \(action.draftBody ?? "")
+            """
+        case .moveToDone:
+            return """
+            \(base)
+            Move the thread to the user's done label/folder and remove it from the inbox if Gmail supports that operation. Do not archive unless that is the only way Gmail represents removing from inbox while adding done.
+            """
+        case .restoreFromDone:
+            return """
+            \(base)
+            Restore the thread to the inbox and keep or remove the done label according to normal Gmail label behavior. Do not send or delete anything.
+            """
+        case .manuallyUnsubscribe:
+            return """
+            \(base)
+            The user approved a manual unsubscribe task. Use only standards-based Gmail unsubscribe capability or List-Unsubscribe metadata if available. Do not visit arbitrary unsubscribe web pages. If standards-based unsubscribe is unavailable, report no action taken. URL hint: \(action.unsubscribeURL?.absoluteString ?? "none")
+            """
+        default:
+            return """
+            \(base)
+            Report that this action kind is not executable through the Gmail connector.
+            """
+        }
     }
 
     private func checkReadinessSync() -> CodexReadiness {

@@ -162,10 +162,10 @@ public final class CommandCenterStore: ObservableObject {
     }
 
     func completeSelectedQuest() {
-        performPrimaryAction()
+        Task { await performPrimaryAction() }
     }
 
-    func performPrimaryAction() {
+    func performPrimaryAction() async {
         guard let selectedQuestID,
               let index = quests.firstIndex(where: { $0.id == selectedQuestID })
         else { return }
@@ -181,6 +181,11 @@ public final class CommandCenterStore: ObservableObject {
         )
 
         guard allow(request) else { return }
+
+        if runtimeMode == .localCodex && requiresConnectorExecution(request.kind) {
+            await executeConnectorAction(for: quest, request: request, index: index)
+            return
+        }
 
         quests[index].status = .complete
         auditEvents.insert(
@@ -291,6 +296,59 @@ public final class CommandCenterStore: ObservableObject {
         case .provideContext, .uploadAttachment:
             return .updateMemory
         }
+    }
+
+    private func requiresConnectorExecution(_ action: ActionKind) -> Bool {
+        switch action {
+        case .createDraft, .moveToDone, .restoreFromDone, .manuallyUnsubscribe:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private func executeConnectorAction(for quest: Quest, request: ActionRequest, index: Int) async {
+        isWorking = true
+        quests[index].status = .inProgress
+        lastOperationMessage = "Running approved \(request.kind.rawValue) through Local Codex..."
+
+        let action = ApprovedCodexAction(
+            kind: request.kind,
+            providerThreadID: quest.providerThreadID,
+            sourceLabel: quest.sourceLabel,
+            draftBody: quest.draftBody,
+            unsubscribeURL: quest.unsubscribeURL,
+            summary: quest.proposedAction
+        )
+
+        do {
+            let result = try await localBridge.executeApprovedAction(action)
+            quests[index].status = .complete
+            auditEvents.insert(
+                AuditEvent(
+                    action: request.kind,
+                    status: .executed,
+                    questID: quest.id,
+                    summary: result
+                ),
+                at: 0
+            )
+            lastOperationMessage = result
+        } catch {
+            quests[index].status = .failed
+            auditEvents.insert(
+                AuditEvent(
+                    action: request.kind,
+                    status: .failed,
+                    questID: quest.id,
+                    summary: error.localizedDescription
+                ),
+                at: 0
+            )
+            lastOperationMessage = error.localizedDescription
+        }
+
+        isWorking = false
     }
 
     private func completionMessage(for quest: Quest) -> String {

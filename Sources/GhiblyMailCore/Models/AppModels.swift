@@ -177,3 +177,12 @@ struct QuestProposal: Codable, Equatable, Sendable {
     var confidence: Double
     var evidence: [String]
 }
+
+struct ApprovedCodexAction: Codable, Equatable, Sendable {
+    var kind: ActionKind
+    var providerThreadID: String?
+    var sourceLabel: String
+    var draftBody: String?
+    var unsubscribeURL: URL?
+    var summary: String
+}

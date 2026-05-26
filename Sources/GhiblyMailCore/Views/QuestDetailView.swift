@@ -51,7 +51,7 @@ struct QuestDetailView: View {
 
             HStack(spacing: 8) {
                 Button {
-                    store.completeSelectedQuest()
+                    Task { await store.performPrimaryAction() }
                 } label: {
                     Label(actionTitle, systemImage: actionIcon)
                 }

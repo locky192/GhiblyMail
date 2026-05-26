@@ -51,7 +51,7 @@ struct HUDView: View {
             .disabled(store.isWorking)
 
             Button {
-                store.completeSelectedQuest()
+                Task { await store.performPrimaryAction() }
             } label: {
                 Label("Complete Quest", systemImage: "checkmark.circle.fill")
                     .labelStyle(.titleAndIcon)

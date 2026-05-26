@@ -48,7 +48,8 @@ Current implementation note:
 - The app uses a Swift `LocalCodexBridge`.
 - Readiness checks use `codex app-server` to inspect ChatGPT login and plugin state.
 - The first quest-import path remains proposal-only and is guarded by the `ghiblymail-test` label.
-- Connector write actions are represented as approved app actions and audit events before any live execution path is added.
+- Connector write actions are routed through the permission layer first, then through Local Codex only after explicit user approval.
+- Local Codex prompts still repeat the hard limits: operate only inside `ghiblymail-test`, never send email, and never delete mail.
 
 ## Safety Boundary
 
@@ -77,6 +78,13 @@ Scope:
 - Do not move labels.
 - Do not unsubscribe.
 - Do not send.
+
+The same permission boundary applies to approved write actions:
+
+- Gmail draft creation: create a draft reply in the existing thread only; never send.
+- Move-to-done: operate only on the approved thread and label.
+- Restore-from-done: operate only on the approved thread and label.
+- Manual unsubscribe: use standards-based Gmail/List-Unsubscribe support only; do not visit arbitrary unsubscribe pages.
 
 Expected output shape:
 

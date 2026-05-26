@@ -214,6 +214,7 @@ Implemented in the local developer app:
 - Runtime picker for Mock versus Local Codex.
 - Codex readiness check plumbing.
 - Proposal-only import path guarded by `ghiblymail-test`.
+- Approval-gated Local Codex execution path for Gmail draft, move-to-done, restore, and standards-based manual unsubscribe actions.
 - Permission policy denying send and auto-unsubscribe.
 - Audit trail with redaction.
 - Local memory stub.
