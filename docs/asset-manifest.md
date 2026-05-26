@@ -20,7 +20,7 @@ Keep generated source prompts in this file or in nearby `.prompt.md` files when 
 
 | Asset | Path | Purpose | Status |
 | --- | --- | --- | --- |
-| Empty office background | `Assets/Office/office-background-empty-v1.png` | Main scene base with no people or HUD | Planned |
+| Empty office background | `Assets/Office/office-background-empty-v1.png` | Main scene base with no people or HUD | Generated V1 |
 | Triage assistant typing loop | `Assets/Agents/triage/agent-triage-typing-v1.png` | Agent working at inbox sorting station | Planned |
 | Drafting assistant typing loop | `Assets/Agents/drafting/agent-drafting-typing-v1.png` | Agent composing reply drafts | Planned |
 | Calendar assistant idle loop | `Assets/Agents/calendar/agent-calendar-idle-v1.png` | Calendar invite queue station | Planned |
@@ -44,6 +44,13 @@ Composition: Wide desktop scene, clear isometric perspective, enough open floor 
 Style: Original cozy hand-painted anime management-sim concept art, painterly texture, soft shadows, nostalgic 1990s/early-2000s creative studio mood, high polish, warm and low-stress.
 
 Avoid: Studio Ghibli copy, recognizable copyrighted characters, readable text, brand logos, watermark, UI panels, email windows, floating HUD, harsh lighting, photorealism, clutter that obscures future sprites.
+
+Generated output:
+
+- Workspace path: `Assets/Office/office-background-empty-v1.png`
+- Dimensions: 1672 x 941 PNG
+- Generation mode: built-in image generation
+- Initial review: strong fit for the target scene, no people or baked HUD, clear work zones, and enough open floor space for assistant sprites and overlays.
 
 ## Sprite Prompt Pattern
 
