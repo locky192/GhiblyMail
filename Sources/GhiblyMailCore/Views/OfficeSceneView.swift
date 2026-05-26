@@ -11,11 +11,9 @@ struct OfficeSceneView: View {
 
     var body: some View {
         GeometryReader { proxy in
-            let sceneFrame = fittedSceneFrame(in: proxy.size)
+            let sceneFrame = filledSceneFrame(in: proxy.size)
 
             ZStack {
-                Theme.deepTeal.opacity(0.22)
-
                 ZStack {
                     OfficeBackgroundImage()
                         .frame(width: sceneFrame.width, height: sceneFrame.height)
@@ -35,17 +33,13 @@ struct OfficeSceneView: View {
                 .frame(width: sceneFrame.width, height: sceneFrame.height)
                 .position(x: sceneFrame.midX, y: sceneFrame.midY)
             }
-            .clipShape(RoundedRectangle(cornerRadius: 8))
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(Color.black.opacity(0.12), lineWidth: 1)
-            )
+            .clipped()
             .accessibilityElement(children: .contain)
             .accessibilityLabel("GhiblyMail office command center")
         }
     }
 
-    private func fittedSceneFrame(in container: CGSize) -> CGRect {
+    private func filledSceneFrame(in container: CGSize) -> CGRect {
         guard container.width > 0, container.height > 0 else {
             return .zero
         }
@@ -55,11 +49,11 @@ struct OfficeSceneView: View {
         let height: CGFloat
 
         if containerRatio > imageAspectRatio {
-            height = container.height
-            width = height * imageAspectRatio
-        } else {
             width = container.width
             height = width / imageAspectRatio
+        } else {
+            height = container.height
+            width = height * imageAspectRatio
         }
 
         return CGRect(
@@ -177,11 +171,17 @@ private struct OfficeBackgroundImage: View {
 
 #if canImport(AppKit)
     private static let image: NSImage? = {
-        guard let url = Bundle.module.url(
+        let nestedURL = Bundle.module.url(
             forResource: "office-background-empty-v1",
             withExtension: "png",
             subdirectory: "Office"
-        ) else {
+        )
+        let rootURL = Bundle.module.url(
+            forResource: "office-background-empty-v1",
+            withExtension: "png"
+        )
+
+        guard let url = nestedURL ?? rootURL else {
             return nil
         }
 

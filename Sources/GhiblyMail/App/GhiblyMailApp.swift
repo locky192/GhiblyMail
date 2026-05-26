@@ -10,6 +10,7 @@ struct GhiblyMailApp: App {
             GhiblyMailRootView()
                 .environmentObject(store)
                 .frame(minWidth: 1180, minHeight: 760)
+                .ignoresSafeArea()
         }
         .windowStyle(.hiddenTitleBar)
         .windowResizability(.contentSize)

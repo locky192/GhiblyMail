@@ -14,39 +14,33 @@ struct CommandCenterView: View {
     var body: some View {
         GeometryReader { proxy in
             ZStack {
-                background
+                Theme.deepTeal
+                    .ignoresSafeArea()
+
+                OfficeSceneView()
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                    .ignoresSafeArea()
 
                 VStack(spacing: 14) {
                     HUDView()
                         .padding(.horizontal, 18)
                         .padding(.top, 14)
 
-                    HStack(spacing: 14) {
-                        OfficeSceneView()
-                            .frame(width: max(660, proxy.size.width * 0.58))
-                            .frame(maxHeight: .infinity)
+                    HStack {
+                        Spacer(minLength: 0)
 
                         QuestBoardView()
                             .frame(width: min(430, max(360, proxy.size.width * 0.34)))
+                            .frame(maxHeight: max(520, proxy.size.height - 112))
+                            .shadow(color: .black.opacity(0.18), radius: 18, x: 0, y: 10)
                     }
                     .padding(.horizontal, 18)
                     .padding(.bottom, 18)
                 }
             }
+            .ignoresSafeArea()
         }
-        .foregroundStyle(Theme.ink)
-    }
-
-    private var background: some View {
-        LinearGradient(
-            colors: [
-                Color(red: 0.87, green: 0.91, blue: 0.86),
-                Theme.cream,
-                Color(red: 0.78, green: 0.88, blue: 0.86)
-            ],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
         .ignoresSafeArea()
+        .foregroundStyle(Theme.ink)
     }
 }
