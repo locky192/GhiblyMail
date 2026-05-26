@@ -91,3 +91,10 @@ Current enforced boundaries:
 - Auto-unsubscribe is denied.
 - Audit events redact email addresses and secret-shaped strings.
 - Prompt-injection fixtures live under `tests/security/prompt-injection-fixtures`.
+
+Live Gmail smoke test note:
+
+- Create a Gmail label named `ghiblymail-test`.
+- Add only safe test threads to that label.
+- Use Local Codex mode only after the readiness check passes.
+- If the label is missing or empty, live import should return no quests rather than reading the general inbox.

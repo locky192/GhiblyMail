@@ -160,6 +160,7 @@ final class LocalCodexBridge: CodexBridge, @unchecked Sendable {
         let prompt = """
         Use the installed Gmail plugin only for label:\(label). Do not modify Gmail. Do not create drafts, move labels, send, unsubscribe, or RSVP.
         Return only compact JSON with a top-level "quests" array. Each item must include threadID, sender, title, summary, category, proposedAction, risk, confidence, and evidence.
+        If the label does not exist or has no matching threads, return {"quests":[]} and do not include any email subjects, senders, snippets, or message bodies.
         Allowed proposedAction values: createDraft, moveToDone, restoreFromDone, queueCalendarInvite, manuallyUnsubscribe, provideContext, uploadAttachment, localProposal.
         """
 
@@ -403,12 +404,20 @@ final class LocalCodexBridge: CodexBridge, @unchecked Sendable {
         }
 
         struct Response: Decodable {
-            var quests: [QuestProposal]
+            var quests: [QuestProposal]?
+            var error: String?
         }
 
         guard let data = jsonText.data(using: .utf8) else {
             throw CodexBridgeError.invalidResponse
         }
-        return try JSONDecoder().decode(Response.self, from: data).quests
+        let response = try JSONDecoder().decode(Response.self, from: data)
+        if let quests = response.quests {
+            return quests
+        }
+        if let error = response.error {
+            throw CodexBridgeError.codexNotReady(error)
+        }
+        throw CodexBridgeError.invalidResponse
     }
 }

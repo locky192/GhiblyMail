@@ -43,6 +43,8 @@ This requires a working Xcode install with a matching Swift compiler and macOS S
 
 The app starts in mock mode. For live experiments, switch to Local Codex mode in the HUD, check Codex readiness, and import only the `ghiblymail-test` label. The MVP permission layer denies sending email and auto-unsubscribe.
 
+Before a live import, create a Gmail label named `ghiblymail-test` and add a small number of safe test threads to it. The app should not operate on the general inbox unless that boundary is changed explicitly.
+
 ## License
 
 No license has been selected yet.

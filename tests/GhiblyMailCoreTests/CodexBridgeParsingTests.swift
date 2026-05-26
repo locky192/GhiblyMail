@@ -14,4 +14,10 @@ final class CodexBridgeParsingTests: XCTestCase {
         XCTAssertEqual(proposals[0].threadID, "abc")
         XCTAssertEqual(proposals[0].proposedAction, .createDraft)
     }
+
+    func testDecodesEmptyQuestArrayForMissingLabel() throws {
+        let proposals = try LocalCodexBridge.decodeQuestProposals(from: #"{"quests":[]}"#)
+
+        XCTAssertEqual(proposals, [])
+    }
 }
