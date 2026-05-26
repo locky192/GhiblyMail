@@ -43,6 +43,13 @@ Preferred implementation order:
 
 The SwiftUI app should not parse terminal UI output as a production interface. A small local helper process can own the Codex protocol details and expose a narrow interface to Swift.
 
+Current implementation note:
+
+- The app uses a Swift `LocalCodexBridge`.
+- Readiness checks use `codex app-server` to inspect ChatGPT login and plugin state.
+- The first quest-import path remains proposal-only and is guarded by the `ghiblymail-test` label.
+- Connector write actions are represented as approved app actions and audit events before any live execution path is added.
+
 ## Safety Boundary
 
 Codex can reason about Gmail, but GhiblyMail owns the product permission model.

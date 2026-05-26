@@ -153,9 +153,10 @@ struct OfficeSceneView: View {
                 .foregroundStyle(Theme.deepTeal)
             Text("Studio floor")
                 .font(.system(size: 13, weight: .bold))
-            Text("Agents are processing mock mail")
+            Text(store.lastOperationMessage)
                 .font(.system(size: 12, weight: .medium))
                 .foregroundStyle(Theme.mutedInk)
+                .lineLimit(1)
         }
         .padding(.horizontal, 12)
         .frame(height: 40)
@@ -192,19 +193,28 @@ private struct DeskCluster: View {
 
 private struct CRTView: View {
     var body: some View {
-        VStack(spacing: 2) {
-            RoundedRectangle(cornerRadius: 4)
-                .fill(Color(red: 0.78, green: 0.70, blue: 0.58))
-                .overlay(
-                    RoundedRectangle(cornerRadius: 2)
-                        .fill(Theme.deepTeal.opacity(0.82))
-                        .padding(6)
-                )
-                .frame(height: 30)
+        TimelineView(.animation) { timeline in
+            let pulse = (sin(timeline.date.timeIntervalSinceReferenceDate * 2.0) + 1) / 2
+            VStack(spacing: 2) {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color(red: 0.78, green: 0.70, blue: 0.58))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(Theme.deepTeal.opacity(0.70 + pulse * 0.20))
+                            .overlay(alignment: .topLeading) {
+                                Circle()
+                                    .fill(Theme.teal.opacity(0.75))
+                                    .frame(width: 5, height: 5)
+                                    .offset(x: 9 + pulse * 20, y: 9)
+                            }
+                            .padding(6)
+                    )
+                    .frame(height: 30)
 
-            RoundedRectangle(cornerRadius: 2)
-                .fill(Color(red: 0.64, green: 0.57, blue: 0.46))
-                .frame(width: 28, height: 8)
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color(red: 0.64, green: 0.57, blue: 0.46))
+                    .frame(width: 28, height: 8)
+            }
         }
     }
 }
@@ -213,34 +223,42 @@ private struct AgentAvatarView: View {
     var agent: Agent
 
     var body: some View {
-        VStack(spacing: 4) {
-            ZStack {
-                Circle()
-                    .fill(colorForRole.opacity(0.24))
-                    .frame(width: 58, height: 58)
+        TimelineView(.animation) { timeline in
+            let bob = agent.state == .working
+                ? sin(timeline.date.timeIntervalSinceReferenceDate * 2.8 + Double(agent.name.count)) * 2.5
+                : 0
 
-                Circle()
-                    .fill(Color(red: 0.96, green: 0.74, blue: 0.58))
-                    .frame(width: 28, height: 28)
-                    .offset(y: -8)
+            VStack(spacing: 4) {
+                ZStack {
+                    Circle()
+                        .fill(colorForRole.opacity(0.24))
+                        .frame(width: 58, height: 58)
+                        .scaleEffect(agent.state == .needsReview ? 1.07 : 1.0)
 
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(colorForRole)
-                    .frame(width: 38, height: 28)
-                    .offset(y: 18)
+                    Circle()
+                        .fill(Color(red: 0.96, green: 0.74, blue: 0.58))
+                        .frame(width: 28, height: 28)
+                        .offset(y: -8)
 
-                Image(systemName: agent.role.systemImage)
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundStyle(.white)
-                    .offset(y: 18)
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(colorForRole)
+                        .frame(width: 38, height: 28)
+                        .offset(y: 18)
+
+                    Image(systemName: agent.role.systemImage)
+                        .font(.system(size: 13, weight: .bold))
+                        .foregroundStyle(.white)
+                        .offset(y: 18)
+                }
+
+                Text(agent.name)
+                    .font(.system(size: 11, weight: .bold))
+                    .padding(.horizontal, 7)
+                    .frame(height: 20)
+                    .background(Theme.panelStrong)
+                    .clipShape(RoundedRectangle(cornerRadius: 6))
             }
-
-            Text(agent.name)
-                .font(.system(size: 11, weight: .bold))
-                .padding(.horizontal, 7)
-                .frame(height: 20)
-                .background(Theme.panelStrong)
-                .clipShape(RoundedRectangle(cornerRadius: 6))
+            .offset(y: bob)
         }
         .accessibilityLabel("\(agent.name), \(agent.role.rawValue), \(agent.state.rawValue)")
     }

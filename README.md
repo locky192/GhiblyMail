@@ -26,14 +26,22 @@ The project is currently in product and architecture setup. The first build targ
 
 ## Local Development
 
-The mock macOS prototype is scaffolded as a Swift package under `Sources/GhiblyMail`.
+The macOS app is a Swift package with a small executable target and a testable core library:
+
+- `Sources/GhiblyMail`: app entry point.
+- `Sources/GhiblyMailCore`: SwiftUI views, app state, models, Codex bridge, permission policy, memory stub, and prompt-injection guard.
+- `Tests/GhiblyMailCoreTests`: focused unit tests for security-critical behavior.
 
 ```sh
 swift build
 swift run GhiblyMail
+swift test
+scripts/security-check.sh
 ```
 
 This requires a working Xcode install with a matching Swift compiler and macOS SDK. See [development setup](docs/development-setup.md).
+
+The app starts in mock mode. For live experiments, switch to Local Codex mode in the HUD, check Codex readiness, and import only the `ghiblymail-test` label. The MVP permission layer denies sending email and auto-unsubscribe.
 
 ## License
 

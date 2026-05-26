@@ -9,22 +9,46 @@ struct HUDView: View {
             StatTile(title: "Drafts", value: "\(store.draftCount)", image: "checkmark.message", tint: Theme.blue)
             StatTile(title: "Blocked", value: "\(store.blockedCount)", image: "paperclip", tint: Theme.amber)
             StatTile(title: "Invites", value: "\(store.inviteCount)", image: "calendar", tint: Theme.teal)
+            StatTile(title: "Lists", value: "\(store.mailingListCount)", image: "envelope.badge", tint: Theme.leaf)
 
             Spacer(minLength: 8)
 
             HStack(spacing: 8) {
-                Image(systemName: "music.note")
-                Text("Lo-fi off")
+                Image(systemName: readinessIcon)
+                Picker("Runtime", selection: runtimeBinding) {
+                    ForEach(RuntimeMode.allCases) { mode in
+                        Text(mode.rawValue).tag(mode)
+                    }
+                }
+                .labelsHidden()
+                .frame(width: 118)
             }
             .font(.system(size: 13, weight: .semibold))
             .padding(.horizontal, 12)
             .frame(height: 44)
-            .background(Theme.panel)
+            .background(store.runtimeMode == .mock ? Theme.panel : Theme.panelStrong)
             .clipShape(RoundedRectangle(cornerRadius: 8))
             .overlay(
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(Theme.line)
             )
+
+            Button {
+                Task { await store.checkCodexReadiness() }
+            } label: {
+                Label("Check Codex", systemImage: "externaldrive.connected.to.line.below")
+                    .labelStyle(.titleAndIcon)
+            }
+            .buttonStyle(HUDButtonStyle(tint: Theme.blue))
+
+            Button {
+                Task { await store.importTestLabel() }
+            } label: {
+                Label("Import Test Label", systemImage: "tray.and.arrow.down")
+                    .labelStyle(.titleAndIcon)
+            }
+            .buttonStyle(HUDButtonStyle(tint: Theme.amber))
+            .disabled(store.isWorking)
 
             Button {
                 store.completeSelectedQuest()
@@ -35,6 +59,17 @@ struct HUDView: View {
             .buttonStyle(HUDButtonStyle(tint: Theme.deepTeal))
             .keyboardShortcut(.return, modifiers: [.command])
         }
+    }
+
+    private var readinessIcon: String {
+        store.readiness.isReadyForGmailRead ? "checkmark.seal.fill" : "music.note"
+    }
+
+    private var runtimeBinding: Binding<RuntimeMode> {
+        Binding(
+            get: { store.runtimeMode },
+            set: { store.setRuntimeMode($0) }
+        )
     }
 }
 

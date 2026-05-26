@@ -1,5 +1,13 @@
 import SwiftUI
 
+public struct GhiblyMailRootView: View {
+    public init() {}
+
+    public var body: some View {
+        CommandCenterView()
+    }
+}
+
 struct CommandCenterView: View {
     @EnvironmentObject private var store: CommandCenterStore
 

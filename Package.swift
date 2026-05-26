@@ -8,13 +8,23 @@ let package = Package(
         .macOS(.v14)
     ],
     products: [
+        .library(name: "GhiblyMailCore", targets: ["GhiblyMailCore"]),
         .executable(name: "GhiblyMail", targets: ["GhiblyMail"])
     ],
     dependencies: [],
     targets: [
+        .target(
+            name: "GhiblyMailCore",
+            path: "Sources/GhiblyMailCore"
+        ),
         .executableTarget(
             name: "GhiblyMail",
+            dependencies: ["GhiblyMailCore"],
             path: "Sources/GhiblyMail"
+        ),
+        .testTarget(
+            name: "GhiblyMailCoreTests",
+            dependencies: ["GhiblyMailCore"]
         )
     ]
 )

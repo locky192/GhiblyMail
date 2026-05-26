@@ -18,8 +18,10 @@ xcode-select -p
 xcodebuild -version
 swift --version
 swift build
+swift test
 codex --version
 codex login status
+scripts/security-check.sh
 ```
 
 Expected:
@@ -49,15 +51,19 @@ Once Xcode is installed and selected:
 sudo xcode-select --switch /Applications/Xcode.app/Contents/Developer
 swift build
 swift run GhiblyMail
+swift test
+scripts/security-check.sh
 ```
 
 ## Project Structure
 
 ```text
 Sources/GhiblyMail/App
-Sources/GhiblyMail/Models
-Sources/GhiblyMail/Support
-Sources/GhiblyMail/Views
+Sources/GhiblyMailCore/Models
+Sources/GhiblyMailCore/Services
+Sources/GhiblyMailCore/Support
+Sources/GhiblyMailCore/Views
+Tests/GhiblyMailCoreTests
 tests/security/prompt-injection-fixtures
 docs
 ```
@@ -72,3 +78,16 @@ The current scaffold is intentionally mock-only:
 - No real sends, drafts, label moves, unsubscribe actions, or calendar writes.
 
 The first runnable goal is to validate the command-center loop: HUD, agent statuses, quests, draft approvals, missing attachments, invite decisions, and triage corrections.
+
+## MVP Guardrails
+
+The local-developer MVP defaults to mock mode. Live experiments should use Local Codex mode only after the readiness check passes.
+
+Current enforced boundaries:
+
+- Gmail reads are limited to the `ghiblymail-test` label.
+- Gmail draft creation, move-to-done, restore-from-done, and manual unsubscribe actions require explicit user approval in the app.
+- Sending email is denied.
+- Auto-unsubscribe is denied.
+- Audit events redact email addresses and secret-shaped strings.
+- Prompt-injection fixtures live under `tests/security/prompt-injection-fixtures`.

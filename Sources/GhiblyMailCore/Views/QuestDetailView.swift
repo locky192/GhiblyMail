@@ -34,6 +34,21 @@ struct QuestDetailView: View {
                 .background(Color.white.opacity(0.42))
                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
+            if let draftBody = quest.draftBody {
+                DetailSection(title: "Draft proposal", text: draftBody)
+                    .padding(10)
+                    .background(Color.white.opacity(0.38))
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+
+            HStack(spacing: 8) {
+                RiskBadge(risk: quest.risk)
+                Text("\(Int(quest.confidence * 100))% confidence")
+                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                    .foregroundStyle(Theme.mutedInk)
+                Spacer()
+            }
+
             HStack(spacing: 8) {
                 Button {
                     store.completeSelectedQuest()
@@ -67,16 +82,46 @@ struct QuestDetailView: View {
         case .uploadAttachment: "Upload"
         case .calendarInvite: "Respond Yes"
         case .triageReview: "Filter Similar"
+        case .moveToDone: "Move to Done"
+        case .restoreToInbox: "Restore"
+        case .mailingList: "Unsubscribe"
+        case .codexSetup: "Check"
         }
     }
 
     private var actionIcon: String {
         switch quest.kind {
-        case .approveDraft: "paperplane.fill"
+        case .approveDraft: "doc.badge.plus"
         case .provideContext: "text.badge.plus"
         case .uploadAttachment: "paperclip"
         case .calendarInvite: "checkmark.circle"
         case .triageReview: "line.3.horizontal.decrease.circle"
+        case .moveToDone: "tray.and.arrow.down.fill"
+        case .restoreToInbox: "arrow.uturn.left.circle.fill"
+        case .mailingList: "link.badge.plus"
+        case .codexSetup: "checkmark.seal"
+        }
+    }
+}
+
+private struct RiskBadge: View {
+    var risk: QuestRisk
+
+    var body: some View {
+        Text("\(risk.rawValue) risk")
+            .font(.system(size: 11, weight: .bold))
+            .foregroundStyle(.white)
+            .padding(.horizontal, 8)
+            .frame(height: 22)
+            .background(color)
+            .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    private var color: Color {
+        switch risk {
+        case .low: Theme.leaf
+        case .medium: Theme.amber
+        case .high: Theme.coral
         }
     }
 }

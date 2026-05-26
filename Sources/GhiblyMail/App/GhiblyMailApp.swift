@@ -1,3 +1,4 @@
+import GhiblyMailCore
 import SwiftUI
 
 @main
@@ -6,7 +7,7 @@ struct GhiblyMailApp: App {
 
     var body: some Scene {
         WindowGroup {
-            CommandCenterView()
+            GhiblyMailRootView()
                 .environmentObject(store)
                 .frame(minWidth: 1180, minHeight: 760)
         }

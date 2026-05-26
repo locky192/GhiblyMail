@@ -204,3 +204,18 @@ Start with Milestone 0 and Milestone 1 together:
 - Use Codex only after the permission layer and bridge contract are in place.
 
 This gives us real product progress while avoiding the biggest security and compliance risks too early.
+
+## Current Implementation Status
+
+Implemented in the local developer app:
+
+- Testable `GhiblyMailCore` library and SwiftUI app shell.
+- Mock mode with draft, move-to-done, calendar, attachment, context, and mailing-list quests.
+- Runtime picker for Mock versus Local Codex.
+- Codex readiness check plumbing.
+- Proposal-only import path guarded by `ghiblymail-test`.
+- Permission policy denying send and auto-unsubscribe.
+- Audit trail with redaction.
+- Local memory stub.
+- Prompt-injection guard and fixtures.
+- Unit tests and `scripts/security-check.sh`.

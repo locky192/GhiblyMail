@@ -50,7 +50,14 @@ enum MockData {
             requiredAction: "Review the draft and approve send.",
             threadPreview: "The agent matched your usual tone from three prior launch-planning threads and kept the reply short.",
             priority: 1,
-            estimatedMinutes: 2
+            estimatedMinutes: 2,
+            action: .createDraft,
+            risk: .medium,
+            sourceLabel: "mock",
+            providerThreadID: "mock-partner-follow-up",
+            draftBody: "Hi Maya,\n\nYes, next Friday still works. The main launch blockers are final QA and partner copy review. I will send a tighter update once those land.\n\nBest,\nLachlan",
+            confidence: 0.86,
+            evidence: ["Matched prior launch-planning replies.", "Send remains disabled."]
         ),
         Quest(
             title: "Upload requested statement",
@@ -62,7 +69,10 @@ enum MockData {
             requiredAction: "Upload the bank statement, then approve the prepared reply.",
             threadPreview: "The reply is ready except for the missing attachment. No financial document was generated.",
             priority: 2,
-            estimatedMinutes: 4
+            estimatedMinutes: 4,
+            action: .uploadAttachment,
+            risk: .high,
+            evidence: ["Factual attachment must come from the user."]
         ),
         Quest(
             title: "Decide on investor intro call",
@@ -74,7 +84,11 @@ enum MockData {
             requiredAction: "Choose yes or no.",
             threadPreview: "No conflict detected in mock calendar data. This will require Calendar write permission later.",
             priority: 2,
-            estimatedMinutes: 1
+            estimatedMinutes: 1,
+            action: .queueCalendarInvite,
+            risk: .low,
+            providerThreadID: "mock-investor-call",
+            evidence: ["Invite is queued only; no RSVP is sent."]
         ),
         Quest(
             title: "Add context for article request",
@@ -86,7 +100,10 @@ enum MockData {
             requiredAction: "Add the viewpoint you want the article to take.",
             threadPreview: "The agent found similar past emails, but no prior article with the exact position requested.",
             priority: 3,
-            estimatedMinutes: 5
+            estimatedMinutes: 5,
+            action: .provideContext,
+            risk: .medium,
+            evidence: ["Needs user-provided viewpoint before drafting."]
         ),
         Quest(
             title: "Tune cold outreach filter",
@@ -98,7 +115,55 @@ enum MockData {
             requiredAction: "Confirm filter similar, optionally add a reason.",
             threadPreview: "This is a mock correction path for future AI triage feedback.",
             priority: 4,
-            estimatedMinutes: 1
+            estimatedMinutes: 1,
+            action: .moveToDone,
+            risk: .low,
+            providerThreadID: "mock-cold-outreach",
+            evidence: ["Cold outreach can move to done after approval."]
+        ),
+        Quest(
+            title: "Review newsletter unsubscribe",
+            sender: "SaaS Weekly",
+            kind: .mailingList,
+            status: .ready,
+            summary: "The triage assistant found a mailing list in the test queue and prepared a manual unsubscribe task.",
+            proposedAction: "Open the unsubscribe action after explicit approval.",
+            requiredAction: "Approve one-click unsubscribe, or keep the list.",
+            threadPreview: "This mock flow never auto-unsubscribes. It records approval before any action.",
+            priority: 5,
+            estimatedMinutes: 1,
+            action: .manuallyUnsubscribe,
+            risk: .medium,
+            sourceLabel: "mock",
+            unsubscribeURL: URL(string: "https://example.com/unsubscribe"),
+            confidence: 0.9,
+            evidence: ["Manual-only unsubscribe task."]
+        )
+    ]
+
+    static let auditEvents: [AuditEvent] = [
+        AuditEvent(
+            action: .readGmail,
+            status: .allowed,
+            questID: nil,
+            summary: "Mock mode initialized. No live Gmail data loaded."
+        )
+    ]
+
+    static let memoryEntries: [MemoryEntry] = [
+        MemoryEntry(
+            kind: .style,
+            title: "Default reply style",
+            summary: "Keep replies concise, direct, warm, and practical. Avoid long preambles.",
+            provenance: "User product spec",
+            userConfirmed: true
+        ),
+        MemoryEntry(
+            kind: .preference,
+            title: "Inbox philosophy",
+            summary: "Only emails requiring attention should remain visible; non-actionable mail moves to done.",
+            provenance: "User product spec",
+            userConfirmed: true
         )
     ]
 }
