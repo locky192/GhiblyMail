@@ -16,6 +16,9 @@ jobs:
       - name: Run Swift tests
         run: swift test
 
+      - name: Run local security checks
+        run: scripts/security-check.sh
+
   secret-pattern-check:
     runs-on: ubuntu-latest
     steps:
