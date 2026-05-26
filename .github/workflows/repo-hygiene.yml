@@ -1,0 +1,38 @@
+name: Repo Hygiene
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  swift-build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build Swift package
+        run: swift build
+
+  secret-pattern-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check for obvious committed secrets
+        run: |
+          set -euo pipefail
+          if grep -RInE '(sk-[A-Za-z0-9_-]{20,}|gh[pousr]_[A-Za-z0-9_]{20,}|AIza[0-9A-Za-z_-]{20,}|-----BEGIN ((RSA|EC|OPENSSH) )?PRIVATE KEY-----)' \
+            --exclude-dir=.git \
+            --exclude-dir=.build \
+            --exclude=repo-hygiene.yml \
+            .; then
+            echo "Potential secret detected in tracked files."
+            exit 1
+          fi
+
+      - name: Check Markdown files are non-empty
+        run: |
+          set -euo pipefail
+          find . -name '*.md' -not -path './.git/*' -print0 | while IFS= read -r -d '' file; do
+            test -s "$file"
+          done

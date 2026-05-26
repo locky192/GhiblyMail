@@ -524,18 +524,21 @@ Open questions:
 
 ## Desired AI Account Model
 
-The desired model is to use the user's OpenAI account, similar to OpenClaw, rather than using OpenAI API keys and usage-based API pricing.
+The desired model is to use the user's ChatGPT/Codex account rather than using OpenAI API keys and usage-based API pricing.
 
 User preference:
 
-- Sign in with OpenAI.
-- Use an existing OpenAI Pro plan and its usage limits for agentic behavior.
+- Sign in with ChatGPT/Codex.
+- Use an existing ChatGPT Pro plan and Codex usage limits for agentic behavior.
 - Avoid API usage-based billing.
 
-Open feasibility check:
+Current implementation direction:
 
-- Confirm what OpenAI-supported integration model, if any, allows this for a third-party desktop app.
-- If not possible, identify alternatives before implementation.
+- Use the local Codex installation directly.
+- Use `codex app-server` or the Codex SDK as the app integration surface.
+- Use the installed Codex Gmail plugin for the first Gmail experiments.
+- Keep OpenAI API billing and direct Gmail OAuth as fallback paths.
+- Confirm longer-term redistribution, App Store, and iOS/iPadOS implications before public release.
 
 ## Future Messaging Expansion
 
@@ -555,8 +558,8 @@ The first useful MVP should likely include:
 - Isometric office command-center home screen.
 - HUD showing key queues and agent activity.
 - Quest-style representation for actionable emails and blockers.
-- Google sign-in for Gmail.
-- Basic message sync.
+- Local Codex connection with installed Gmail plugin.
+- Basic Gmail-backed message sync or connector import.
 - Recognition of the user's `done` folder.
 - AI triage to move non-actionable mail to `done`.
 - Feedback buttons for "filter similar" and "keep similar".
@@ -613,7 +616,8 @@ Technical:
 - Native Swift/SwiftUI, Electron, Tauri, or another desktop architecture?
 - Gmail API versus IMAP plus Gmail-specific APIs?
 - Local storage architecture for emails, CRM, summaries, embeddings, and drafts.
-- OpenAI account-based access feasibility.
+- Codex app-server versus Codex SDK bridge implementation.
+- Whether direct Gmail OAuth is needed for packaged distribution or later iOS/iPadOS support.
 - Privacy, encryption, and local data security requirements.
 - Exact Google OAuth scopes required for each MVP feature.
 - Whether any server-side component is needed, and if so, what sensitive data it can access.
