@@ -10,6 +10,8 @@ The project is currently in product and architecture setup. The first build targ
 - [Setup roadmap](docs/setup-roadmap.md)
 - [Technical architecture](docs/technical-architecture.md)
 - [Codex/Gmail integration plan](docs/codex-gmail-architecture.md)
+- [Art direction](docs/art-direction.md)
+- [Asset manifest](docs/asset-manifest.md)
 - [Security threat model](docs/security-threat-model.md)
 - [OAuth and AI feasibility notes](docs/oauth-and-ai-feasibility.md)
 - [MVP rollout](docs/mvp-rollout.md)
