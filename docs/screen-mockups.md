@@ -69,6 +69,7 @@ Open review questions:
 ## MVP Destination Screens
 
 Interaction routing is documented in `docs/mockup-interaction-map.md`.
+The feature-complete implementation plan is documented in `docs/mvp-implementation-plan.md`.
 
 Generated destination mockups:
 
