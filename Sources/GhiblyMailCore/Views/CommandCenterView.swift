@@ -17,18 +17,22 @@ struct CommandCenterView: View {
                 Theme.deepTeal
                     .ignoresSafeArea()
 
-                OfficeSceneView()
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                    .ignoresSafeArea()
+                if store.screen == .home {
+                    HomeMockupScreen()
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .ignoresSafeArea()
+                } else {
+                    OfficeSceneView()
+                        .frame(width: proxy.size.width, height: proxy.size.height)
+                        .ignoresSafeArea()
 
-                if store.screen != .home {
                     Color.black.opacity(0.34)
                         .ignoresSafeArea()
                         .transition(.opacity)
-                }
 
-                MVPChromeView()
-                    .padding(18)
+                    MVPChromeView()
+                        .padding(18)
+                }
             }
             .ignoresSafeArea()
         }

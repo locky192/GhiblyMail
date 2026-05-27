@@ -44,6 +44,8 @@ PLIST
 
 mkdir -p "${RESOURCES_PATH}/Office"
 cp "${PWD}/Sources/GhiblyMailCore/Resources/Office/office-background-empty-v1.png" "${RESOURCES_PATH}/Office/office-background-empty-v1.png"
+mkdir -p "${RESOURCES_PATH}/Mockups"
+cp "${PWD}/Sources/GhiblyMailCore/Resources/Mockups/main-office-home-v1.png" "${RESOURCES_PATH}/Mockups/main-office-home-v1.png"
 find "${BIN_PATH}" -maxdepth 1 -name '*GhiblyMailCore.bundle' -type d -exec cp -R {} "${RESOURCES_PATH}/" \;
 
 codesign --force --deep --sign - "${APP_PATH}" >/dev/null
