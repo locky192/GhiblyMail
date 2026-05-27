@@ -408,10 +408,10 @@ Needed local assets if generated later:
 
 ## Completion Checklist
 
-- [ ] Functional feature inventory implemented.
-- [ ] Every visible route/action has defined behavior.
-- [ ] Automated tests cover every feature group above.
-- [ ] UI visually aligns with the mockups at default desktop size.
-- [ ] Local-only safety constraints hold.
-- [ ] Security audit completed and documented.
-- [ ] Full verification passes.
+- [x] Functional feature inventory implemented.
+- [x] Every visible route/action has defined behavior.
+- [x] Automated tests cover every feature group above.
+- [x] UI visually aligns with the mockups at default desktop size.
+- [x] Local-only safety constraints hold.
+- [x] Security audit completed and documented.
+- [x] Full verification passes.

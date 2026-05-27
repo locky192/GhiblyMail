@@ -9,10 +9,11 @@ struct GhiblyMailApp: App {
         WindowGroup {
             GhiblyMailRootView()
                 .environmentObject(store)
-                .frame(minWidth: 1180, minHeight: 760)
+                .frame(minWidth: 1180, minHeight: 720)
                 .ignoresSafeArea()
         }
+        .defaultSize(width: 1500, height: 860)
         .windowStyle(.hiddenTitleBar)
-        .windowResizability(.contentSize)
+        .windowResizability(.contentMinSize)
     }
 }

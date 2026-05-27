@@ -171,6 +171,20 @@ private struct OfficeBackgroundImage: View {
 
 #if canImport(AppKit)
     private static let image: NSImage? = {
+        let mainNestedURL = Bundle.main.url(
+            forResource: "office-background-empty-v1",
+            withExtension: "png",
+            subdirectory: "Office"
+        )
+        let mainRootURL = Bundle.main.url(
+            forResource: "office-background-empty-v1",
+            withExtension: "png"
+        )
+
+        if let url = mainNestedURL ?? mainRootURL {
+            return NSImage(contentsOf: url)
+        }
+
         let nestedURL = Bundle.module.url(
             forResource: "office-background-empty-v1",
             withExtension: "png",
