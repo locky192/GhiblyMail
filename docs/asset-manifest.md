@@ -30,6 +30,15 @@ Keep generated source prompts in this file or in nearby `.prompt.md` files when 
 | Quest complete effect | `Assets/Effects/fx-quest-complete-sparkle-v1.png` | Lightweight completion feedback | Planned |
 | Main office home mockup V1 | `Assets/Mockups/main-office-home-v1.png` | Preferred flat home-screen direction | Preferred V1 |
 | Main office home mockup V2 | `Assets/Mockups/main-office-home-v2.png` | Cleaner alternate exploration | Alternate V2 |
+| Quest command board mockup V1 | `Assets/Mockups/quest-command-board-v1.png` | Unified MVP quest queue destination | Draft |
+| Draft review mockup V1 | `Assets/Mockups/draft-review-v1.png` | AI draft approval workflow destination | Draft |
+| Calendar invites mockup V1 | `Assets/Mockups/calendar-invites-v1.png` | Meeting invite approval workflow destination | Draft |
+| Attachment requests mockup V1 | `Assets/Mockups/attachment-requests-v1.png` | Blocked file/context workflow destination | Draft |
+| Mailing list cleanup mockup V1 | `Assets/Mockups/mailing-list-unsubscribe-v1.png` | Mailing list unsubscribe workflow destination | Draft |
+| Triage tuning mockup V1 | `Assets/Mockups/triage-tuning-v1.png` | Automation classification correction workflow destination | Draft |
+| Daily brief and plan mockup V1 | `Assets/Mockups/daily-brief-plan-v1.png` | Combined brief, prioritization, and plan destination | Draft |
+| Settings and connections mockup V1 | `Assets/Mockups/settings-connections-v1.png` | Compact service, focus, music, and agent settings destination | Draft |
+| Performance and achievements mockup V1 | `Assets/Mockups/performance-achievements-v1.png` | Combined outcome tracking and achievement destination | Draft |
 
 ## Background Prompt V1
 

@@ -65,3 +65,39 @@ Open review questions:
 - Should station markers be labels, icons only, or labels on hover?
 - Should the bottom navigation be persistent or replaced by clickable room zones?
 - Should the quest summary show counts only, or also one recommended next action?
+
+## MVP Destination Screens
+
+Interaction routing is documented in `docs/mockup-interaction-map.md`.
+
+Generated destination mockups:
+
+- `Assets/Mockups/quest-command-board-v1.png`
+- `Assets/Mockups/draft-review-v1.png`
+- `Assets/Mockups/calendar-invites-v1.png`
+- `Assets/Mockups/attachment-requests-v1.png`
+- `Assets/Mockups/mailing-list-unsubscribe-v1.png`
+- `Assets/Mockups/triage-tuning-v1.png`
+- `Assets/Mockups/daily-brief-plan-v1.png`
+- `Assets/Mockups/settings-connections-v1.png`
+- `Assets/Mockups/performance-achievements-v1.png`
+
+Destination-screen intent:
+
+- Keep the app shallow: every V1 home control routes to one of the screens above.
+- Treat filters, toggles, tabs, sort chips, and approval buttons as inline states unless implementation later proves a separate modal is necessary.
+- Keep every screen goal-oriented and automation-first, with one obvious primary action.
+- Preserve the office-first visual direction from V1 with compact cream HUD panels, teal/amber/coral/blue accents, and no dense inbox or full email body views.
+
+Prompt pattern used for destination screens:
+
+```text
+Use case: ui-mockup
+Asset type: flat full-screen 16:9 visual mockup for the GhiblyMail macOS app.
+Reference image: use the visible V1 main office home mockup only for palette, office-first composition, compact game HUD, warm cream panels, teal/amber/coral/blue accents, and cozy productivity mood. Create a new original destination screen.
+Screen to create: [screen name].
+Primary request: show the result of clicking the corresponding V1 control(s), with a compact MVP workflow that reduces time spent in Gmail.
+Layout: office background edge-to-edge, top-left home/back and day status, compact counters, focused translucent cream HUD panels, and one primary action.
+Style: original cozy hand-painted office management-sim UI; macOS game-like; compact, readable, low-stress; rounded corners max 8px.
+Strict avoid: literal Studio Ghibli style, copyrighted characters, recognizable mascots, real email text, full email bodies, dense inbox lists, watermarks, and deep nested settings or analytics pages.
+```
