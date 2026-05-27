@@ -74,6 +74,12 @@ struct Quest: Identifiable, Codable, Equatable, Sendable {
     var unsubscribeURL: URL?
     var confidence: Double
     var evidence: [String]
+    var dueLabel: String?
+    var decisionState: QuestDecisionState
+    var localAttachmentName: String?
+    var draftEdited: Bool
+    var isSnoozed: Bool
+    var categoryTags: [String]
 
     init(
         id: UUID = UUID(),
@@ -94,7 +100,13 @@ struct Quest: Identifiable, Codable, Equatable, Sendable {
         draftBody: String? = nil,
         unsubscribeURL: URL? = nil,
         confidence: Double = 0.8,
-        evidence: [String] = []
+        evidence: [String] = [],
+        dueLabel: String? = nil,
+        decisionState: QuestDecisionState = .none,
+        localAttachmentName: String? = nil,
+        draftEdited: Bool = false,
+        isSnoozed: Bool = false,
+        categoryTags: [String] = []
     ) {
         self.id = id
         self.title = title
@@ -115,5 +127,11 @@ struct Quest: Identifiable, Codable, Equatable, Sendable {
         self.unsubscribeURL = unsubscribeURL
         self.confidence = confidence
         self.evidence = evidence
+        self.dueLabel = dueLabel
+        self.decisionState = decisionState
+        self.localAttachmentName = localAttachmentName
+        self.draftEdited = draftEdited
+        self.isSnoozed = isSnoozed
+        self.categoryTags = categoryTags
     }
 }
