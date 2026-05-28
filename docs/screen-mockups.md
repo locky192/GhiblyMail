@@ -70,6 +70,7 @@ Open review questions:
 
 Interaction routing is documented in `docs/mockup-interaction-map.md`.
 The feature-complete implementation plan is documented in `docs/mvp-implementation-plan.md`.
+The interactive production Home Screen implementation is documented in `docs/interactive-home-implementation.md`.
 
 Generated destination mockups:
 

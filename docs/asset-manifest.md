@@ -21,13 +21,13 @@ Keep generated source prompts in this file or in nearby `.prompt.md` files when 
 | Asset | Path | Purpose | Status |
 | --- | --- | --- | --- |
 | Empty office background | `Assets/Office/office-background-empty-v1.png` | Main scene base with no people or HUD | Integrated V1 |
-| Triage assistant typing loop | `Assets/Agents/triage/agent-triage-typing-v1.png` | Agent working at inbox sorting station | Planned |
-| Drafting assistant typing loop | `Assets/Agents/drafting/agent-drafting-typing-v1.png` | Agent composing reply drafts | Planned |
-| Calendar assistant idle loop | `Assets/Agents/calendar/agent-calendar-idle-v1.png` | Calendar invite queue station | Planned |
-| Attachment assistant waiting | `Assets/Agents/attachments/agent-attachment-waiting-v1.png` | Missing attachment quest state | Planned |
-| CRT glow overlay | `Assets/Props/prop-crt-glow-v1.png` | Animated screen pulse overlay | Planned |
-| Paper sorting overlay | `Assets/Props/prop-paper-sort-v1.png` | Small mail sorting animation | Planned |
-| Quest complete effect | `Assets/Effects/fx-quest-complete-sparkle-v1.png` | Lightweight completion feedback | Planned |
+| Triage assistant typing loop | Code-native in `HomeMockupScreen` | Agent working at inbox sorting station | Implemented SwiftUI layer |
+| Drafting assistant typing loop | Code-native in `HomeMockupScreen` | Agent composing reply drafts | Implemented SwiftUI layer |
+| Calendar assistant idle loop | Code-native in `HomeMockupScreen` | Calendar invite queue station | Implemented SwiftUI layer |
+| Attachment assistant waiting | Code-native in `HomeMockupScreen` | Missing attachment quest state | Implemented SwiftUI layer |
+| CRT glow overlay | Code-native in `HomeMockupScreen` | Animated screen pulse overlay | Implemented SwiftUI layer |
+| Paper sorting overlay | Code-native in `HomeMockupScreen` | Small mail sorting animation | Implemented SwiftUI layer |
+| Quest complete effect | Code-native in `HomeMockupScreen` | Lightweight completion feedback | Implemented SwiftUI layer |
 | Main office home mockup V1 | `Assets/Mockups/main-office-home-v1.png` | Preferred flat home-screen direction | Preferred V1 |
 | Main office home mockup V2 | `Assets/Mockups/main-office-home-v2.png` | Cleaner alternate exploration | Alternate V2 |
 | Quest command board mockup V1 | `Assets/Mockups/quest-command-board-v1.png` | Unified MVP quest queue destination | Draft |
@@ -63,7 +63,14 @@ Generated output:
 - Dimensions: 1672 x 941 PNG
 - Generation mode: built-in image generation
 - Initial review: strong fit for the target scene, no people or baked HUD, clear work zones, and enough open floor space for assistant sprites and overlays.
-- Integration status: bundled through SwiftPM resources and displayed by `OfficeSceneView` with normalized station anchors and temporary animated agent placeholders.
+- Integration status: bundled through SwiftPM resources and displayed by `OfficeSceneView` for focused routes and by the interactive Home Screen as the production scene plate.
+
+## Interactive Home Production Notes
+
+- Runtime Home Screen implementation: `Sources/GhiblyMailCore/Views/HomeMockupScreen.swift`
+- Scene plate: `Sources/GhiblyMailCore/Resources/Office/office-background-empty-v1.png`
+- Flat mockup status: retained only as design reference in `Assets/Mockups/main-office-home-v1.png`
+- Production approach: live SwiftUI components and code-native animated layers over the clean office background.
 
 ## Sprite Prompt Pattern
 

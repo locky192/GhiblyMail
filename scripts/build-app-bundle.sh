@@ -1,9 +1,11 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-swift build
+CONFIGURATION="${GHIBLYMAIL_BUILD_CONFIGURATION:-release}"
 
-BIN_PATH="$(swift build --show-bin-path)"
+swift build -c "${CONFIGURATION}"
+
+BIN_PATH="$(swift build -c "${CONFIGURATION}" --show-bin-path)"
 APP_PATH="${1:-/private/tmp/GhiblyMail.app}"
 CONTENTS_PATH="${APP_PATH}/Contents"
 MACOS_PATH="${CONTENTS_PATH}/MacOS"
@@ -44,8 +46,6 @@ PLIST
 
 mkdir -p "${RESOURCES_PATH}/Office"
 cp "${PWD}/Sources/GhiblyMailCore/Resources/Office/office-background-empty-v1.png" "${RESOURCES_PATH}/Office/office-background-empty-v1.png"
-mkdir -p "${RESOURCES_PATH}/Mockups"
-cp "${PWD}/Sources/GhiblyMailCore/Resources/Mockups/main-office-home-v1.png" "${RESOURCES_PATH}/Mockups/main-office-home-v1.png"
 find "${BIN_PATH}" -maxdepth 1 -name '*GhiblyMailCore.bundle' -type d -exec cp -R {} "${RESOURCES_PATH}/" \;
 
 codesign --force --deep --sign - "${APP_PATH}" >/dev/null
